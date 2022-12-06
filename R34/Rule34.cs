@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using System.Runtime.Intrinsics.Arm;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace R34;
@@ -15,7 +17,7 @@ public class Rule34
 
         var parameters = new Dictionary<string, string>()
         {
-            { "TAGS","" },
+            { "TAGS", ConcatTags(tags)},
             {"LIMIT", limit.ToString() },
         };
         var url = ApiUrl.Search;
@@ -41,6 +43,13 @@ public class Rule34
         {
             yield return post;
         }
+    }
+    public string ConcatTags(IEnumerable<string> tags)
+    {
+        var sb = new StringBuilder();
+        foreach (var tag in tags)
+            sb.Append('+' + tag);
+        return sb.ToString();
     }
     public IEnumerable<Comment> GetComments(Post post) => GetComments(post.Id);
     public IEnumerable<Comment> GetComments(int postId)
