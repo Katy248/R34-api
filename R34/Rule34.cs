@@ -17,8 +17,8 @@ public class Rule34
 
         var parameters = new Dictionary<string, string>()
         {
-            { "TAGS", ConcatTags(tags)},
-            {"LIMIT", limit.ToString() },
+            { "TAGS", ConcatTags(tags) },
+            { "LIMIT", limit.ToString() },
         };
         var url = ApiUrl.Search;
         if (pageId != -1)
@@ -52,7 +52,7 @@ public class Rule34
         return sb.ToString();
     }
     public IEnumerable<Comment> GetComments(Post post) => GetComments(post.Id);
-    public IEnumerable<Comment> GetComments(int postId)
+    public IEnumerable<Comment> GetComments(long postId)
     {
         var parameters = new Dictionary<string, string>()
         {
