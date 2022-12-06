@@ -2,11 +2,11 @@
 
 var r34 = new Rule34();
 
-var posts = r34.Search(new string[] { "anal" }, 1, 12);
+var posts = r34.Search(new string[] { "anal"}, 1, 12);
 foreach (var post in posts)
 {
     Console.WriteLine($"- Post {post.Id} -");
-    Console.WriteLine($"Post owner: {post.Owner}; Image url: {post.Image};");
+    Console.WriteLine($"Post owner: {post.Owner}; Image url: {post.Image}; Creation date: {post.created_at};");
     Console.WriteLine($"Tags: {post.tags}");
     Console.WriteLine("--");
 }
@@ -19,5 +19,4 @@ foreach (var comment in comments)
     Console.WriteLine("--");
 }
 //var posts2 = r34.GetPool(23299);
-Console.ForegroundColor = ConsoleColor.Green;
-Console.WriteLine(r34.Random(new string[] { "anal" })?.Image);
+Console.Error.WriteLine(r34.Random(new string[] { "-anal", "-futanari", "-gay" }, 10)?.Image);
