@@ -1,4 +1,4 @@
-﻿using R34.Python;
+﻿using R34;
 
 var r34 = new Rule34();
 
