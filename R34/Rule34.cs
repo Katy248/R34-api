@@ -30,11 +30,14 @@ public class Rule34
         if (response.StatusCode != HttpStatusCode.OK) //if res_status != 200 or res_len <= 0:
             yield break;
 
-        var posts = response.Content.ReadFromJsonAsync<Post[]>().Result;
+        var text = response.Content.ReadAsStringAsync().Result;
+
+        var posts = new XmlSerializer(typeof(PostContainer), new Type[] { typeof(Post) })
+            .Deserialize(response.Content.ReadAsStream()) as PostContainer;
 
         if (posts is null) yield break;
 
-        foreach (var post in posts)
+        foreach (var post in posts.Posts)
         {
             yield return post;
         }
