@@ -81,7 +81,9 @@ public class Rule34
 
         try
         {
-            return response.Content.ReadFromJsonAsync<Post[]>().Result.FirstOrDefault();
+            var post = new XmlSerializer(typeof(Post))
+                .Deserialize(response.Content.ReadAsStream()) as Post;
+            return post;
         }
         catch (Exception)
         {
