@@ -36,8 +36,8 @@ public class Rule34
 
         var text = response.Content.ReadAsStringAsync().Result;
 
-        var posts = new XmlSerializer(typeof(PostContainer), new Type[] { typeof(Post) })
-            .Deserialize(response.Content.ReadAsStream()) as PostContainer;
+        var posts = new XmlSerializer(typeof(PostsContainer), new Type[] { typeof(Post) })
+            .Deserialize(response.Content.ReadAsStream()) as PostsContainer;
 
         if (posts is null) yield break;
 
@@ -69,8 +69,8 @@ public class Rule34
 
         var text = response.Content.ReadAsStringAsync().Result;
 
-        var comments = new XmlSerializer(typeof(CommentContainer), new Type[] { typeof(Comment) })
-            .Deserialize(response.Content.ReadAsStream()) as CommentContainer;
+        var comments = new XmlSerializer(typeof(CommentsContainer), new Type[] { typeof(Comment) })
+            .Deserialize(response.Content.ReadAsStream()) as CommentsContainer;
 
         foreach (var comment in comments.Comments)
         {

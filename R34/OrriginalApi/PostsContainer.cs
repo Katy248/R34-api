@@ -3,7 +3,7 @@
 namespace R34.OrriginalApi;
 
 [XmlType("posts")]
-public class PostContainer
+public class PostsContainer
 {
     [XmlElement("post")]
     public List<Post> Posts;
