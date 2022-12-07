@@ -1,8 +1,10 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Http.Json;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Xml.Serialization;
+using R34.OrriginalApi;
 
 namespace R34;
 
@@ -98,6 +100,36 @@ public class Rule34
         {
             return null;
         }
+    }
+    public IEnumerable<Tag> GetTags(int limit)
+    {
+        var url = ApiUrl.Tags + "&limit=" + limit.ToString();
+
+        var response = new HttpClient().GetAsync(url).Result;
+
+        if (response.StatusCode != HttpStatusCode.OK)
+            yield break;
+        
+        var tags = new XmlSerializer(typeof(TagsContainer), new Type[] { typeof(Tag) })
+            .Deserialize(response.Content.ReadAsStream()) as TagsContainer;
+
+        foreach (var tag in tags.Tags)
+        {
+            yield return tag;
+        }
+    }
+    public Tag? GetTag(int id)
+    {
+        var url = ApiUrl.Tags + "&id=" + id.ToString();
+        var response = new HttpClient().GetAsync(url).Result;
+
+        if (response.StatusCode != HttpStatusCode.OK)
+            return null;
+
+        var tag = new XmlSerializer(typeof(TagsContainer), new Type[] { typeof(Tag) })
+            .Deserialize(response.Content.ReadAsStream()) as TagsContainer;
+
+        return tag?.Tags.FirstOrDefault();
     }
     public Post Random(IEnumerable<string>? tags, int limit = 1000)
     {
