@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace R34;
+namespace R34.OrriginalApi;
 
 public class Comment
 {
