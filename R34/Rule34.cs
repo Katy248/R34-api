@@ -1,171 +1,105 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Net.Http.Json;
-using System.Runtime.Intrinsics.Arm;
+﻿
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Xml.Serialization;
-using R34.OrriginalApi;
+using R34.Models;
+using R34.UriBuilders;
 
 namespace R34;
 
 public class Rule34
 {
-    public IEnumerable<Post> Search(IEnumerable<string> tags, int pageId = -1, int limit = 500, bool deleted = false, bool ignoreMaxLimit = false)
+    private readonly ApiClient _client = new();
+    public async Task<IEnumerable<Post>> Search(IEnumerable<string> tags, int pageId = -1, int limit = 500, bool deleted = false, bool ignoreMaxLimit = false)
     {
-        if (!ignoreMaxLimit && limit > 1000 || limit <= 0)
-            throw new Exception("Invalid value for limit.");
-        if (deleted)
-            throw new Exception("To include deleted images not implemented yet.");
+        var uri = new UriBuilders.UriBuilder().PostList()
+            .Page(pageId)
+            .Tags(tags.Select(tag => FormatTag(tag)))
+            .Limit(limit)
+            .UseJson()
+            .Build();
 
-        var parameters = new Dictionary<string, string>()
-        {
-            { "TAGS", ConcatTags(tags) },
-            { "LIMIT", limit.ToString() },
-        };
-        var url = ApiUrl.Search;
-        if (pageId != -1)
-        {
-            parameters.Add("PAGE_ID", pageId.ToString());
-            url += "&pid={{PAGE_ID}}";
-        }
-        var formattedUrl = ParseUrlParameters(url, parameters);
-        var response = new HttpClient().GetAsync(formattedUrl).Result;
+        var response = await _client.Execute(uri);
 
-        if (response.StatusCode != HttpStatusCode.OK) //if res_status != 200 or res_len <= 0:
-            yield break;
-
-        var text = response.Content.ReadAsStringAsync().Result;
-
-        var posts = new XmlSerializer(typeof(PostsContainer), new Type[] { typeof(Post) })
-            .Deserialize(response.Content.ReadAsStream()) as PostsContainer;
-
-        if (posts is null) yield break;
-
-        foreach (var post in posts.Posts)
-        {
-            yield return post;
-        }
-    }
-    public string ConcatTags(IEnumerable<string> tags)
-    {
-        var sb = new StringBuilder();
-        foreach (var tag in tags)
-            sb.Append('+' + tag);
-        return sb.ToString();
-    }
-    public IEnumerable<Comment> GetComments(Post post) => GetComments(post.Id);
-    public IEnumerable<Comment> GetComments(long postId)
-    {
-        var parameters = new Dictionary<string, string>()
-        {
-            {"POST_ID", postId.ToString() }
-        };
-        var formattedUrl = ParseUrlParameters(ApiUrl.Comments, parameters);
-
-        var response = new HttpClient().GetAsync(formattedUrl).Result;
-
-        if (response.StatusCode != HttpStatusCode.OK)
-            yield break;
-
-        var text = response.Content.ReadAsStringAsync().Result;
-
-        var comments = new XmlSerializer(typeof(CommentsContainer), new Type[] { typeof(Comment) })
-            .Deserialize(response.Content.ReadAsStream()) as CommentsContainer;
-
-        foreach (var comment in comments.Comments)
-        {
-            yield return comment;
-        }
-    }
-    public Post? GetPost(int id)
-    {
-        var parameters = new Dictionary<string, string>()
-        {
-            {"POST_ID", id.ToString() }
-        };
-        var formattedUrl = ParseUrlParameters(ApiUrl.GetPost, parameters);
-
-        var response = new HttpClient().GetAsync(formattedUrl).Result;
-
-        if (response.StatusCode != HttpStatusCode.OK)
-            return null;
-
-        try
-        {
-            var post = new XmlSerializer(typeof(Post))
-                .Deserialize(response.Content.ReadAsStream()) as Post;
-            return post;
-        }
-        catch (Exception)
-        {
-            return null;
-        }
-    }
-    public IEnumerable<Tag> GetTags(int limit)
-    {
-        var url = ApiUrl.Tags + "&limit=" + limit.ToString();
-
-        var response = new HttpClient().GetAsync(url).Result;
-
-        if (response.StatusCode != HttpStatusCode.OK)
-            yield break;
+        var content = await response.ReadAsStringAsync();
         
-        var tags = new XmlSerializer(typeof(TagsContainer), new Type[] { typeof(Tag) })
-            .Deserialize(response.Content.ReadAsStream()) as TagsContainer;
+        var posts = JsonSerializer.Deserialize<Post[]>(await response.ReadAsStreamAsync());
 
-        foreach (var tag in tags.Tags)
-        {
-            yield return tag;
-        }
+        if (posts is null) return Array.Empty<Post>();
+
+        return posts;
     }
-    public Tag? GetTag(int id)
+    private string FormatTag(string tag) => 
+        tag.Replace(' ', '_').Replace('\n', '_');
+    public async Task<IEnumerable<Comment>> GetComments(Post post) => await GetComments(post.Id);
+    public async Task<IEnumerable<Comment>> GetComments(long postId)
     {
-        var url = ApiUrl.Tags + "&id=" + id.ToString();
-        var response = new HttpClient().GetAsync(url).Result;
+        var uri = new UriBuilders.UriBuilder()
+            .CommentList().FromPost(postId).UseJson().Build();
 
-        if (response.StatusCode != HttpStatusCode.OK)
-            return null;
+        var response = await _client.Execute(uri);
 
-        var tag = new XmlSerializer(typeof(TagsContainer), new Type[] { typeof(Tag) })
-            .Deserialize(response.Content.ReadAsStream()) as TagsContainer;
+        var body = await response.ReadAsStringAsync();
 
-        return tag?.Tags.FirstOrDefault();
+
+        var commentsContainer = new XmlSerializer(typeof(CommentsContainer)).Deserialize(await response.ReadAsStreamAsync()) as CommentsContainer;
+        //var comments = JsonSerializer.Deserialize<Comment[]>(await response.ReadAsStreamAsync());
+
+        if (commentsContainer is null)
+            return Array.Empty<Comment>();
+
+        return commentsContainer.Comments;
     }
-    public Post Random(IEnumerable<string>? tags, int limit = 1000)
+    public async Task<Post?> GetPost(int id)
+    {
+        var uri = new UriBuilders.UriBuilder().Post().Id(id).UseJson().Build();
+
+        var response = await _client.Execute(uri);
+
+        var post = JsonSerializer.Deserialize<Post>(await response.ReadAsStreamAsync());
+
+        return post;
+    }
+    public async Task<IEnumerable<Tag>> GetTags(int limit)
+    {
+        var uri = new UriBuilders.UriBuilder().TagList().Limit(limit).UseJson().Build();
+
+        var response = await _client.Execute(uri);
+
+        var body = await response.ReadAsStringAsync();
+
+        var tagsContainer = new XmlSerializer(typeof(TagsContainer)).Deserialize(await response.ReadAsStreamAsync()) as TagsContainer;
+        //var tags = JsonSerializer.Deserialize<Tag[]>(await response.ReadAsStreamAsync());
+        
+        if (tagsContainer is null)
+            return Array.Empty<Tag>();
+
+        return tagsContainer.Tags;
+    }
+    public async Task<Tag?> GetTag(int id)
+    {
+        var uri = new UriBuilders.UriBuilder().Tag().Id(id).UseJson().Build();
+
+        var response = await _client.Execute(uri);
+
+        var body = await response.ReadAsStringAsync();
+
+        //var tag = JsonSerializer.Deserialize<Tag>(await response.ReadAsStreamAsync());
+        var tagsContainer = new XmlSerializer(typeof(TagsContainer)).Deserialize(await response.ReadAsStreamAsync()) as TagsContainer;
+
+
+        return tagsContainer?.Tags.FirstOrDefault();
+    }
+    public async Task<Post> Random(IEnumerable<string>? tags, int limit = 1000)
     {
         if (tags is null)
             while (true)
             {
-                var post = GetPost(Post.GetRandomPostId);
+                var post = await GetPost(Post.GetRandomPostId);
                 if (post is not null) return post;
             }
-        var posts = Search(tags, limit: limit).ToArray();
+        var posts = (await Search(tags, limit: limit)).ToArray();
         return posts[System.Random.Shared.Next(0, limit - 1)];
     }
-    private string ParseUrlParameters(string url, Dictionary<string, string> parameters)
-    {
-        foreach (var parameter in parameters)
-            url = url.Replace($"{{{parameter.Key}}}", parameter.Value);
-        return url;
-    }
 }
-/*//Я в душе не чаю что это должно возвращать, у автора нет документации
-    public IEnumerable<Post> GetPool(int poolId, bool fast = true)
-    {
-        var parameters = new Dictionary<string, string>()
-        {
-            {"POOL_ID", poolId.ToString() }
-        };
-        var formattedUrl = ParseUrlParameters(ApiUrl.Pool, parameters);
-
-        var response = new HttpClient().GetAsync(formattedUrl).Result;
-
-        if (response.StatusCode != HttpStatusCode.OK)
-            yield break;
-
-        var text = response.Content.ReadAsStringAsync().Result;
-
-        var parser = new HtmlParser();
-        var parsed = parser.ParseDocument(text);
-        //parsed.All.Where(el => el.)
-    }*/
