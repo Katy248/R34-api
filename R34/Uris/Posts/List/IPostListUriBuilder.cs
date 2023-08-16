@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using R34.Uris.Core;
 
-namespace R34.Interfaces;
+namespace R34.Uris.Posts.List;
 public interface IPostListUriBuilder : IObjectListUriBuilder<IPostListUriBuilder>
 {
     IPostListUriBuilder Page(int page);

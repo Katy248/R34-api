@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using R34.Interfaces;
+﻿using R34.Uris.Core;
 
-namespace R34.UriBuilders;
-public class SingleTagUriBuilder : UriBuilder, ISingleTagUriBuilder
+namespace R34.Uris.Tags.Single;
+public class SingleTagUriBuilder : ApiUriBuilder, ISingleTagUriBuilder
 {
     public SingleTagUriBuilder(IEnumerable<Pair<string, string>> parameters) : base(parameters)
     {

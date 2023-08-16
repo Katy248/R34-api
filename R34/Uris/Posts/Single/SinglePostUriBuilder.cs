@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using R34.Interfaces;
+﻿using R34.Uris.Core;
 
-namespace R34.UriBuilders;
-public class SinglePostUriBuilder : UriBuilder, ISinglePostUriBuilder
+namespace R34.Uris.Posts.Single;
+public class SinglePostUriBuilder : ApiUriBuilder, ISinglePostUriBuilder
 {
     public SinglePostUriBuilder(IEnumerable<Pair<string, string>> parameters) : base(parameters)
     {

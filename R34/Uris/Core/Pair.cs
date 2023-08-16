@@ -1,4 +1,4 @@
-﻿namespace R34.Interfaces;
+﻿namespace R34.Uris.Core;
 
 public class Pair<TKey, TValue>
 {

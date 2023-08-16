@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using R34.Interfaces;
+﻿using System.Text;
 
-namespace R34.UriBuilders;
-public class UriBuilder : IUriBuilder
+namespace R34.Uris.Core;
+public class ApiUriBuilder : IApiUriBuilder
 {
     public const string BaseUri = "https://api.rule34.xxx/index.php?page=dapi&q=index";
     public const char Separator = '&';
@@ -16,11 +11,11 @@ public class UriBuilder : IUriBuilder
 
     public IEnumerable<Pair<string, string>> Parametrs => _parameters;
 
-    public UriBuilder()
+    public ApiUriBuilder()
     {
         _parameters ??= new();
     }
-    public UriBuilder(IEnumerable<Pair<string, string>> parameters)
+    public ApiUriBuilder(IEnumerable<Pair<string, string>> parameters)
     {
         _parameters = new(parameters);
     }
@@ -43,7 +38,7 @@ public class UriBuilder : IUriBuilder
         return _uriBuilder.ToString();
     }
 
-    public IUriBuilder UseJson(bool use = true)
+    public IApiUriBuilder UseJson(bool use = true)
     {
         SetValue("json", use ? "1" : "0");
         return this;

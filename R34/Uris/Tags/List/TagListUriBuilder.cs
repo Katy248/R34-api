@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using R34.Interfaces;
+﻿using R34.Uris.Core;
 
-namespace R34.UriBuilders;
-public class TagListUriBuilder : UriBuilder, ITagListUriBuilder
+namespace R34.Uris.Tags.List;
+public class TagListUriBuilder : ApiUriBuilder, ITagListUriBuilder
 {
     public TagListUriBuilder(IEnumerable<Pair<string, string>> parameters) : base(parameters)
     {
