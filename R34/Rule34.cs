@@ -19,17 +19,14 @@ public class Rule34
             .Page(pageId)
             .Tags(tags.Select(tag => FormatTag(tag)))
             .Limit(limit)
-            .UseJson()
+            //.UseJson()
             .Build();
 
         var content = await _client.GetContentAsync(uri);
 
-        var posts = JsonSerializer.Deserialize<Post[]>(content);
+        var posts = new XmlSerializer(typeof(PostsContainer)).Deserialize(content);
 
-        if (posts is null)
-            return Array.Empty<Post>();
-
-        return posts;
+        return posts as IEnumerable<Post> ?? Array.Empty<Post>();
     }
     /// <summary>
     /// Replace all whitespaces with underline.
@@ -50,17 +47,17 @@ public class Rule34
         if (commentsContainer is null)
             return Array.Empty<Comment>();
 
-        return commentsContainer.Comments;
+        return commentsContainer;
     }
     public async Task<Post?> GetPost(int id)
     {
-        var uri = new ApiUriBuilder().Post().Id(id).UseJson().Build();
+        var uri = new ApiUriBuilder().Post().Id(id).Build();
 
         var content = await _client.GetContentAsync(uri);
 
-        var post = JsonSerializer.Deserialize<Post>(content);
+        var post = new XmlSerializer(typeof(PostsContainer)).Deserialize(content);
 
-        return post;
+        return (post as IEnumerable<Post>)?.FirstOrDefault();
     }
     public async Task<IEnumerable<Tag>> GetTags(int limit)
     {
@@ -73,7 +70,7 @@ public class Rule34
         if (tagsContainer is null)
             return Array.Empty<Tag>();
 
-        return tagsContainer.Tags;
+        return tagsContainer;
     }
     public async Task<Tag?> GetTag(int id)
     {
@@ -83,7 +80,7 @@ public class Rule34
 
         var tagsContainer = new XmlSerializer(typeof(TagsContainer)).Deserialize(content) as TagsContainer;
 
-        return tagsContainer?.Tags.FirstOrDefault();
+        return tagsContainer?.FirstOrDefault();
     }
     public async Task<Post> Random(IEnumerable<string>? tags, int limit = 1000)
     {

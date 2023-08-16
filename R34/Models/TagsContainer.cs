@@ -1,16 +1,13 @@
 ﻿using System.Collections;
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 
 namespace R34.Models;
 
 [XmlType("tags")]
-public class TagsContainer : IEnumerable<Tag>
+public class TagsContainer : EntityContainer<Tag>
 {
     [XmlElement("tag"), JsonPropertyName("tag")]
-    public List<Tag> Tags { get; set; }
-
-    public IEnumerator<Tag> GetEnumerator() => Tags.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => Tags.GetEnumerator();
+    public override IEnumerable<Tag> Entities => base.Entities;
 }

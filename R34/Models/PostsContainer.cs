@@ -5,12 +5,8 @@ using System.Xml.Serialization;
 namespace R34.Models;
 
 [XmlType("posts")]
-public class PostsContainer : IEnumerable<Post>
+public class PostsContainer : EntityContainer<Post>
 {
     [XmlElement("post"), JsonPropertyName("post")]
-    public List<Post> Posts { get; set; }
-
-    public IEnumerator<Post> GetEnumerator() => Posts.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => Posts.GetEnumerator();
+    public override IEnumerable<Post> Entities => base.Entities;
 }
