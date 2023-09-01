@@ -4,9 +4,9 @@ using System.Xml.Serialization;
 
 namespace R34.Models;
 
-[XmlType("comments")]
-public class CommentsContainer : EntityContainer<Comment>
+[XmlRoot(ElementName = "comments")]
+public class CommentsContainer
 {
     [XmlElement("comment"), JsonPropertyName("comment")]
-    public override IEnumerable<Comment> Entities => base.Entities;
+    public List<Comment> Entities { get; set; }
 }

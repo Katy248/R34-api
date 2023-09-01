@@ -37,7 +37,7 @@ public class Post
 
     #endregion
 
-    public IEnumerable<string> TagsSequence => Tags.Split(' ');
+    public IEnumerable<string> TagsSequence => Tags.Trim().Split(' ');
 
     #region Static
 
