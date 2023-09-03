@@ -4,5 +4,5 @@ namespace R34.Uris.Tags.List;
 
 public interface ITagListUriBuilder : IObjectListUriBuilder<ITagListUriBuilder>
 {
-
+    ITagListUriBuilder Page(int id);
 }

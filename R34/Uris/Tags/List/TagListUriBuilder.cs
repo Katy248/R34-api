@@ -1,4 +1,5 @@
-﻿using R34.Uris.Core;
+﻿using System.Collections.Generic;
+using R34.Uris.Core;
 
 namespace R34.Uris.Tags.List;
 public class TagListUriBuilder : ApiUriBuilder, ITagListUriBuilder
@@ -14,6 +15,13 @@ public class TagListUriBuilder : ApiUriBuilder, ITagListUriBuilder
             return this;
 
         SetValue("limit", limit.ToString());
+        return this;
+    }
+
+    public ITagListUriBuilder Page(int id)
+    {
+        if (id >= 0)
+            SetValue("pid", id.ToString());
         return this;
     }
 }

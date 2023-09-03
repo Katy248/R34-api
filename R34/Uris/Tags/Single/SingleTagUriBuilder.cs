@@ -12,4 +12,10 @@ public class SingleTagUriBuilder : ApiUriBuilder, ISingleTagUriBuilder
         SetValue("id", id.ToString());
         return this;
     }
+
+    public ISingleTagUriBuilder Name(string name)
+    {
+        SetValue("name", name);
+        return this;
+    }
 }

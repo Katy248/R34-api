@@ -1,32 +1,30 @@
-﻿using System.Text.Json;
-using System.Xml.Serialization;
-using R34.Models;
+﻿using R34.Models;
 using R34.Uris.Comments.List;
 using R34.Uris.Core;
 using R34.Uris.Posts.List;
 using R34.Uris.Posts.Single;
 using R34.Uris.Tags.List;
 using R34.Uris.Tags.Single;
+using R34.Utilities;
 
 namespace R34;
 
 public class Rule34
 {
     private readonly ApiClient _client = new();
-    public async Task<IEnumerable<Post>> Search(IEnumerable<string> tags, int pageId = -1, int limit = 500, bool deleted = false, bool ignoreMaxLimit = false)
+    public async Task<PostsContainer> Search(IEnumerable<string> tags, int pageId = -1, int limit = 500, bool deleted = false, bool ignoreMaxLimit = false)
     {
         var uri = new ApiUriBuilder().PostList()
             .Page(pageId)
             .Tags(tags.Select(tag => FormatTag(tag)))
             .Limit(limit)
-            //.UseJson()
             .Build();
 
         var content = await _client.GetContentAsync(uri);
 
-        var posts = new XmlSerializer(typeof(PostsContainer)).Deserialize(content);
+        var posts = content.DeserializeXml<PostsContainer>();
 
-        return posts as IEnumerable<Post> ?? Array.Empty<Post>();
+        return posts ?? new();
     }
     /// <summary>
     /// Replace all whitespaces with underline.
@@ -42,12 +40,9 @@ public class Rule34
 
         var content = await _client.GetContentAsync(uri);
 
-        var commentsContainer = new XmlSerializer(typeof(CommentsContainer)).Deserialize(content) as CommentsContainer;
+        var commentsContainer = content.DeserializeXml<CommentsContainer>();
 
-        if (commentsContainer is null)
-            return Array.Empty<Comment>();
-
-        return commentsContainer;
+        return (commentsContainer?.Entities as IEnumerable<Comment>) ?? Array.Empty<Comment>();
     }
     public async Task<Post?> GetPost(int id)
     {
@@ -55,22 +50,19 @@ public class Rule34
 
         var content = await _client.GetContentAsync(uri);
 
-        var post = new XmlSerializer(typeof(PostsContainer)).Deserialize(content);
+        var post = content.DeserializeXml<PostsContainer>();
 
-        return (post as IEnumerable<Post>)?.FirstOrDefault();
+        return post?.Entities.FirstOrDefault();
     }
-    public async Task<IEnumerable<Tag>> GetTags(int limit)
+    public async Task<IEnumerable<Tag>> GetTags(int limit, int page = 0)
     {
-        var uri = new ApiUriBuilder().TagList().Limit(limit).Build();
+        var uri = new ApiUriBuilder().TagList().Limit(limit).Page(page).Build();
 
         var content = await _client.GetContentAsync(uri);
 
-        var tagsContainer = new XmlSerializer(typeof(TagsContainer)).Deserialize(content) as TagsContainer;
+        var tagsContainer = content.DeserializeXml<TagsContainer>();
 
-        if (tagsContainer is null)
-            return Array.Empty<Tag>();
-
-        return tagsContainer;
+        return (tagsContainer as IEnumerable<Tag>) ?? Array.Empty<Tag>();
     }
     public async Task<Tag?> GetTag(int id)
     {
@@ -78,7 +70,17 @@ public class Rule34
 
         var content = await _client.GetContentAsync(uri);
 
-        var tagsContainer = new XmlSerializer(typeof(TagsContainer)).Deserialize(content) as TagsContainer;
+        var tagsContainer = content.DeserializeXml<TagsContainer>();
+
+        return tagsContainer?.FirstOrDefault();
+    }
+    public async Task<Tag?> GetTag(string name)
+    {
+        var uri = new ApiUriBuilder().Tag().Name(name).Build();
+
+        var content = await _client.GetContentAsync(uri);
+
+        var tagsContainer = content.DeserializeXml<TagsContainer>();
 
         return tagsContainer?.FirstOrDefault();
     }
@@ -91,7 +93,7 @@ public class Rule34
                 if (post is not null)
                     return post;
             }
-        var posts = (await Search(tags, limit: limit)).ToArray();
+        var posts = (await Search(tags, limit: limit)).Entities.ToArray();
         return posts[System.Random.Shared.Next(0, limit - 1)];
     }
 }

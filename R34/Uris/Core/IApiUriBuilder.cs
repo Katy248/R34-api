@@ -3,5 +3,5 @@ public interface IApiUriBuilder
 {
     string Build();
     IApiUriBuilder UseJson(bool use = true);
-    IEnumerable<Pair<string, string>> Parametrs { get; }
+    IEnumerable<Pair<string, string>> Parameters { get; }
 }

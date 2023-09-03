@@ -5,6 +5,6 @@ public static class Extensions
 {
     public static ISinglePostUriBuilder Post(this IApiUriBuilder builder)
     {
-        return new SinglePostUriBuilder(builder.Parametrs);
+        return new SinglePostUriBuilder(builder.Parameters);
     }
 }

@@ -9,7 +9,7 @@ public class ApiUriBuilder : IApiUriBuilder
     protected readonly StringBuilder _uriBuilder = new(BaseUri);
     protected readonly List<Pair<string, string>> _parameters;
 
-    public IEnumerable<Pair<string, string>> Parametrs => _parameters;
+    public IEnumerable<Pair<string, string>> Parameters => _parameters;
 
     public ApiUriBuilder()
     {

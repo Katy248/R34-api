@@ -5,6 +5,6 @@ public static class Extensions
 {
     public static ISingleTagUriBuilder Tag(this IApiUriBuilder builder)
     {
-        return new SingleTagUriBuilder(builder.Parametrs);
+        return new SingleTagUriBuilder(builder.Parameters);
     }
 }

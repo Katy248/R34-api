@@ -5,6 +5,6 @@ public static class Extensions
 {
     public static ICommentListUriBuilder CommentList(this IApiUriBuilder builder)
     {
-        return new CommentListUriBuilder(builder.Parametrs);
+        return new CommentListUriBuilder(builder.Parameters);
     }
 }
