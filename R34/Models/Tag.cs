@@ -16,5 +16,6 @@ public class Tag
     public int Count { get; set; }
     [XmlAttribute("ambiguous"), JsonPropertyName("ambiguous")]
     public bool Ambiguous { get; set; }
-
 }
+
+public enum TagType : int { General = 0, Artist = 1, Copyright = 3, Character = 4, Meta = 5}
