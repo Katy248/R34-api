@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] Add tags from original API
+- [X] Add tags from original API
+- [ ] Make all ids of type int
 - [ ] Rename some functions and structures
 - [ ] Add deleted images (?)
-- [ ] Add not original tags (HTML-parse functions)
