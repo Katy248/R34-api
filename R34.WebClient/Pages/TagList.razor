@@ -1,0 +1,36 @@
+﻿@page "/search/tags/{Id:int}/{Page:int}"
+@using R34.Models;
+
+@if (_tags is null)
+{
+    
+}
+else if(_tags.Count() == 0)
+{
+    
+}
+else
+{
+    @foreach(var tag in _tags)
+    {
+        <article>
+            <p>@tag.Id</p>
+            <p>@tag.Name</p>
+            <p>@tag.Count</p>
+            <p>@tag.Type</p>
+        </article>    
+    }
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    [Parameter] public int Page { get; set; }
+    IEnumerable<Tag> _tags;
+    Rule34 _rule34 = new();
+    protected override async Task OnInitializedAsync()
+    {
+        _tags = await _rule34.GetTags(200);
+
+        await base.OnInitializedAsync();
+    }
+}

@@ -1,0 +1,91 @@
+﻿@using R34.Models;
+<h3>Tags:</h3>
+@if (_tags.Count == 0)
+{
+    <article aria-busy="true">
+        Loading
+    </article>
+}
+else
+{
+    <article>
+        <h6>Copyright</h6>
+        @foreach (var tag in _tags.Where(tag => tag.Type == (int)TagType.Copyright))
+        {
+            <a href="/search/@tag.Name/0">@tag.Name<sub>@tag.Count</sub></a>
+            @("\t")
+        }
+    </article>
+    <article>
+        <h6>Character</h6>
+        @foreach (var tag in _tags.Where(tag => tag.Type == (int)TagType.Character))
+        {
+            <a href="/search/@tag.Name/0">@tag.Name<sub>@tag.Count</sub></a>
+            @("\t")
+        }
+    </article>
+    <article>
+        <h6>General</h6>
+        @foreach (var tag in _tags.Where(tag => tag.Type == (int)TagType.General))
+        {
+            <a href="/search/@tag.Name/0">@tag.Name<sub>@tag.Count</sub></a>
+            @("\t")
+        }
+    </article>
+    <article>
+        <h6>Artist</h6>
+        @foreach (var tag in _tags.Where(tag => tag.Type == (int)TagType.Artist))
+        {
+            <a href="/search/@tag.Name/0">@tag.Name<sub>@tag.Count</sub></a>
+            @("\t")
+        }
+    </article>
+    <article>
+        <h6>Meta</h6>
+        @foreach (var tag in _tags.Where(tag => tag.Type == (int)TagType.Meta))
+        {
+            <a href="/search/@tag.Name/0">@tag.Name<sub>@tag.Count</sub></a>
+            @("\t")
+        }
+    </article>
+    @* <article>
+        @foreach (var tag in _tags.Where(tag => tag.Type == 2))
+        {
+            <a href="/search/@tag.Name/0">@(tag.Name + "\t")</a>
+        }
+    </article> *@
+}
+
+@code {
+    [Inject] ILogger<TagsComponent> Logger { get; set; }
+
+    [Parameter] public Post Post { get; set; }
+    Rule34 _rule34 = new();
+    List<Tag> _tags = new();
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await foreach (var tag in GetTags(Post))
+            {
+                _tags.Add(tag);
+                StateHasChanged();
+            }
+            await base.OnInitializedAsync();
+        }
+        catch (Exception e)
+        {
+            Logger.LogWarning(e, "");
+        }
+    }
+
+    async IAsyncEnumerable<Tag> GetTags(Post post)
+    {
+        foreach (var postTag in post.TagsSequence)
+        {
+            var tag = await _rule34.GetTag(name: postTag);
+            if (tag is not null)
+                yield return tag;
+        }
+    }
+}

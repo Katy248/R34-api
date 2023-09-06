@@ -1,0 +1,20 @@
+﻿@using R34.WebClient.StateProviders;
+<ul>
+    <li>
+        <button class="@(AppSection.AppSection == StateProviders.AppSection.Posts ? "contrast" : "contrast outline")" @onclick="PostsClickHandler">Posts</button>
+    </li>
+    <li>
+        <button class="@(AppSection.AppSection == StateProviders.AppSection.Tags ? "contrast" : "contrast outline")" @onclick="TagsClickHandler">Tags</button>
+    </li>
+</ul>
+@code {
+    [CascadingParameter] AppSectionStateProvider AppSection { get; set; }
+    async Task PostsClickHandler()
+    {
+        AppSection.AppSection = StateProviders.AppSection.Posts;
+    }
+    async Task TagsClickHandler()
+    {
+        AppSection.AppSection = StateProviders.AppSection.Tags;
+    }
+}

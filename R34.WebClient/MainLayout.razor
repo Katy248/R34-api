@@ -1,0 +1,35 @@
+﻿@using R34.WebClient.StateProviders;
+@inherits LayoutComponentBase
+
+<CascadingValue Value="SearchQuery" IsFixed="false">
+<CascadingValue Value="AppSection" IsFixed="false">
+    <header class="container">
+        <nav>
+            <ul>
+                <li>
+                    <a href="/">
+                        <strong>
+                                R34 web client
+                        </strong>
+                    </a>
+                </li>
+            </ul>
+            <ul>
+                <li>
+                    <RandomPostButton></RandomPostButton>
+                </li>
+            </ul>
+            <AppSectionComponent></AppSectionComponent>
+        </nav>
+        <SearchComponent></SearchComponent>
+    </header>
+    <main class="container">
+
+        @Body
+    </main>
+</CascadingValue>
+</CascadingValue>
+@code{
+    private SearchQueryStateProvider SearchQuery = new();
+    private AppSectionStateProvider AppSection = new();
+}

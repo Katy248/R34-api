@@ -1,0 +1,96 @@
+﻿@page "/search/{Query}/{Page:int}"
+@using R34.Models;
+@using R34.WebClient.StateProviders;
+<PageTitle>Search: @Query</PageTitle>
+@* <SearchComponent></SearchComponent> *@
+
+@if (_posts is null)
+{
+    <article aria-busy="true">
+        Loading
+    </article>
+}
+else if(_posts.Entities.Count() == 0)
+{
+    <article>
+        No posts
+    </article>
+}
+else
+{
+    <h4>
+        Total posts: @_posts.PostsCount
+    </h4>
+    <div class="grid">
+
+        @if (Page != 0)
+        {
+            <a 
+                href="/search/@Query/0" 
+                role="button" 
+                @onclick="OnPageLinkClickHandler"
+                target="_top"> @("<<") </a>
+        }
+        @foreach(var pageNum in _pagesArray.SkipWhile(num => Math.Abs(num - Page) > 1).Take(10))
+        {
+            <a 
+                href="/search/@Query/@pageNum" 
+                class="@(Page == pageNum ? "outline" : "")" 
+                role="button" 
+                @onclick="OnPageLinkClickHandler"
+                target="_top">
+                @(pageNum + 1)
+            </a>
+        }
+        @if (Page != _pagesArray.Last())
+        {
+            <a 
+                href="/search/@Query/@(_pagesArray.Last())" 
+                role="button" 
+                @onclick="OnPageLinkClickHandler"
+                target="_top"> >> </a>
+        }
+    </div>
+    @foreach (var post in _posts.Entities)
+    {
+            <PostCard Post="post"/>
+    }
+}
+
+@code {
+    [Inject] IJSRuntime JS { get; set; }
+    [CascadingParameter] SearchQueryStateProvider? SearchQueryInfo { get; set; }
+    [Parameter] public string? Query { get; set; }
+    [Parameter] public int Page { get; set; }
+    [Parameter] public int PostsLimit { get; set; } = 20;
+    //string _query = "";
+    PostsContainer _posts;
+    Rule34 _rule34 = new();
+
+    IEnumerable<int> _pagesArray => Enumerable.Range(0, (int)Math.Round((decimal)_posts.PostsCount / (decimal)PostsLimit, MidpointRounding.ToPositiveInfinity));
+    protected override async Task OnInitializedAsync()
+    {
+        if (SearchQueryInfo is not null)
+            SearchQueryInfo.SearchQuery = Query?.Replace('+', ' ') ?? "";
+
+        _posts = null;
+        StateHasChanged();
+
+        if (!string.IsNullOrWhiteSpace(Query))
+        {
+            _posts = await _rule34.Search(Query.Split('+'), limit: PostsLimit, pageId: Page);
+            // await JS.InvokeVoidAsync("console.log", _posts as PostsContainer);
+            // await JS.InvokeVoidAsync("console.log", _posts.PostsCount + "");
+        }
+        else
+        {
+            _posts = new PostsContainer();
+        }
+        await base.OnInitializedAsync();
+    }
+    private async Task OnPageLinkClickHandler()
+    {
+        // _posts = null;
+        // StateHasChanged();
+    }
+}

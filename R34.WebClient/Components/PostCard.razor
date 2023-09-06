@@ -1,0 +1,28 @@
+﻿@using R34.Models;
+<article 
+    class="@(ShowFull ? "warning": "")"
+    @onclick="PostCardClickHandler">
+    <header>
+        @Post.Id
+        @Post.Owner
+    </header>
+    <img src="@(ShowFull ? Post.FileUrl: Post.PreviewUrl)" />
+    @if (ShowFull)
+    {
+        <footer>
+            <TagsComponent Post="Post"/>
+        </footer>
+    }
+    
+    <footer>
+        <a href="/post/@Post.Id">View details</a>
+    </footer>
+</article>
+@code {
+    [Parameter, EditorRequired] public Post Post { get; set; }
+    private bool ShowFull = false;
+    private async Task PostCardClickHandler()
+    {
+        ShowFull = !ShowFull;
+    }
+}

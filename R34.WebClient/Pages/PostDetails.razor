@@ -1,0 +1,111 @@
+﻿@page "/post/{Id:int}"
+@using R34.Models;
+
+@if (_post is null)
+{
+    <article >
+        @if (_loading)
+        {
+            <h3 aria-busy="true">Loading</h3>
+        }
+        else
+        {
+            <h3>Post does not exist</h3>
+        }
+       
+    </article>
+}
+else
+{
+    <article>
+        <img src="@_post.FileUrl"/>
+        <hgroup>
+            <h3>
+                Creator @_post.CreatorId <sup></sup>
+            </h3>
+            
+            <h3>Created at: @_post.CreatedAt</h3>
+        </hgroup>
+        <details>
+            <summary>
+                <strong>Details</strong>
+            </summary>
+
+            <p>Rating: @_post.Rating</p>
+            <p>Score: @_post.Score</p>
+            <p>File url: <a href="@_post.FileUrl" target="_blank">@_post.FileUrl</a></p>
+            <p>Preview url: <a href="@_post.PreviewUrl" target="_blank">@_post.PreviewUrl</a></p>
+            <p>Sample url: <a href="@_post.SampleUrl" target="_blank">@_post.SampleUrl</a></p>
+            <p>Source url:  <a href="@_post.Source" target="_blank">@_post.Source</a></p>
+
+            <hr/>
+
+            <p>Has comments: @_post.HasComments</p>
+            <p>Hash: @_post.Hash</p>
+            <p>Status: @_post.Status</p>
+
+        </details>
+
+        <div class="grid">
+            <div>
+                <TagsComponent Post="@_post"/>
+            </div>
+            <div>
+                
+                @if (_comments.Count() == 0)
+                {
+                    <h3>
+                        No comments
+                    </h3>
+                }
+                else
+                {
+                    <h3>
+                        Comments
+                    </h3>
+                    @foreach (var comment in _comments)
+                    {
+                        @* <article> *@
+                            @* <header>@comment.CreatorId</header> *@
+                            <blockquote>
+                                @comment.Body
+                                <footer>
+                                    <cite>
+                                        - @comment.Creator (@comment.CreatedAt)
+                                        <a href="/search/user:@comment.CreatorId/0">
+                                            @comment.CreatorId
+                                        </a>
+                                    </cite>
+                                </footer>
+                                
+                            </blockquote>
+                        @* </article> *@
+                    }
+                }
+
+            </div>
+        </div>
+        
+    </article>
+}
+
+
+@code {
+    bool _loading = true;
+    [Parameter] public int Id { get; set; }
+    [Inject] ILogger<PostDetails> Logger { get; set; }
+    Post? _post;
+    Rule34 _rule34 = new();
+    IEnumerable<Comment> _comments;
+    protected override async Task OnInitializedAsync()
+    {
+        _post = await _rule34.GetPost(Id);
+        _comments = await _rule34.GetComments(Id);
+
+        await base.OnInitializedAsync();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

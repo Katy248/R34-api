@@ -1,0 +1,24 @@
+﻿@using R34.WebClient.StateProviders;
+
+<form class="grid" @onsubmit="PerformSearch">
+    @* <input @bind-value="Query" placeholder="Enter tags"></input> *@
+    <input @bind-value="SearchQueryInfo.SearchQuery" placeholder="Enter tags"></input>
+    <button type="submit">Search</button>
+</form>
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        //Query = SearchQueryInfo?.SearchQuery ?? "ass";
+        await base.OnInitializedAsync();
+    }
+    //string _query = "";
+    //[Parameter] public string Query { get => SearchQueryInfo?.SearchQuery ?? ""; set => SearchQueryInfo.SearchQuery = value.Trim().Replace('+', ' '); }
+    [Inject] public NavigationManager NavigationManager { get; set; }
+    [CascadingParameter] public SearchQueryStateProvider? SearchQueryInfo { get; set; }
+    async Task PerformSearch()
+    {
+        // if (SearchQueryInfo is not null)
+        //     SearchQueryInfo.SearchQuery = Query;
+        NavigationManager.NavigateTo($"/search/{SearchQueryInfo.SearchQuery.Trim().Replace(' ', '+')}/0", new NavigationOptions { ForceLoad = true, });
+    }
+}
