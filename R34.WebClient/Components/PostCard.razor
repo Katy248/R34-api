@@ -1,23 +1,22 @@
 ﻿@using R34.Models;
-<article 
-    class="@(ShowFull ? "warning": "")"
+<div 
+    class="flex flex-col gap-1 justify-between rounded-lg bg-white p-2 drop-shadow shadow-white"
     @onclick="PostCardClickHandler">
-    <header>
+    <div class="rounded bg-violet-300 text-center text-white">
         @Post.Id
-        @Post.Owner
-    </header>
-    <img src="@(ShowFull ? Post.FileUrl: Post.PreviewUrl)" />
-    @if (ShowFull)
+    </div>
+    <img class="rounded" src="@Post.SampleUrl" />
+    @* @if (ShowFull)
     {
-        <footer>
+        <div>
             <TagsComponent Post="Post"/>
-        </footer>
-    }
+        </div>
+    } *@
     
-    <footer>
-        <a href="/post/@Post.Id">View details</a>
-    </footer>
-</article>
+    <div class="flex">
+        <a class="flex-grow text-center text-white bg-pink-300 rounded hover:bg-pink-400" href="/post/@Post.Id">View details</a>
+    </div>
+</div>
 @code {
     [Parameter, EditorRequired] public Post Post { get; set; }
     private bool ShowFull = false;

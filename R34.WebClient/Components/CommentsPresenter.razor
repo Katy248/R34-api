@@ -1,0 +1,35 @@
+<div class="text-3xl">
+    Comments:
+</div>
+<div class="flex flex-col gap-3 pt-2">
+
+@foreach (var comment in Comments)
+{
+    <div class="bg-white drop-shadow shadow-white rounded p-2 justify-start flex flex-col gap-2">
+        <div class="text-lg">
+            @comment.Body
+        </div>
+        <div class="text-gray-500">
+            @comment.Creator (@(DateTime.Parse(comment.CreatedAt).ToShortDateString()))
+        </div>
+    </div>
+    @* <article> *@
+        @* <header>@comment.CreatorId</header> *@
+        @* <blockquote>
+            
+            <footer>
+                <cite>
+                    - @comment.Creator (@comment.CreatedAt)
+                    <a href="/search/user:@comment.CreatorId/0">
+                        @comment.CreatorId
+                    </a>
+                </cite>
+            </footer>
+            
+        </blockquote> *@
+    @* </article> *@
+}
+</div>
+@code{
+    [Parameter] public IEnumerable<Comment> Comments { get; set; }
+}

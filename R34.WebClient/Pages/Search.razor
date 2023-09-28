@@ -6,28 +6,28 @@
 
 @if (_posts is null)
 {
-    <article aria-busy="true">
+    <div aria-busy="true">
         Loading
-    </article>
+    </div>
 }
 else if(_posts.Entities.Count() == 0)
 {
-    <article>
+    <div>
         No posts
-    </article>
+    </div>
 }
 else
 {
-    <h4>
+    <div class="text-2xl">
         Total posts: @_posts.PostsCount
-    </h4>
-    <div class="grid">
+    </div>
+    <div class="flex flex-ro flex-wrap gap-2">
 
         @if (Page != 0)
         {
             <a 
+                class=""
                 href="/search/@Query/0" 
-                role="button" 
                 @onclick="OnPageLinkClickHandler"
                 target="_top"> @("<<") </a>
         }
@@ -35,8 +35,7 @@ else
         {
             <a 
                 href="/search/@Query/@pageNum" 
-                class="@(Page == pageNum ? "outline" : "")" 
-                role="button" 
+                class="@(Page == pageNum ? "outline" : "")"
                 @onclick="OnPageLinkClickHandler"
                 target="_top">
                 @(pageNum + 1)
@@ -45,16 +44,18 @@ else
         @if (Page != _pagesArray.Last())
         {
             <a 
-                href="/search/@Query/@(_pagesArray.Last())" 
-                role="button" 
+                href="/search/@Query/@(_pagesArray.Last())"
                 @onclick="OnPageLinkClickHandler"
                 target="_top"> >> </a>
         }
     </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-7 gap-3 justify-self-end">
+
     @foreach (var post in _posts.Entities)
     {
             <PostCard Post="post"/>
     }
+    </div>
 }
 
 @code {
@@ -62,7 +63,7 @@ else
     [CascadingParameter] SearchQueryStateProvider? SearchQueryInfo { get; set; }
     [Parameter] public string? Query { get; set; }
     [Parameter] public int Page { get; set; }
-    [Parameter] public int PostsLimit { get; set; } = 20;
+    [Parameter] public int PostsLimit { get; set; } = 35;
     //string _query = "";
     PostsContainer _posts;
     Rule34 _rule34 = new();

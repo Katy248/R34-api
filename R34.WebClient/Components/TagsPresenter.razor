@@ -1,0 +1,22 @@
+@if(Tags.Any()){
+
+<div>
+    <div class="">@Title</div>
+    <div class="pt-2 flex flex-row gap-1 flex-wrap">
+        @foreach (var tag in Tags)
+        {
+            <div class="bg-gray-300 px-3 py-1 rounded-3xl hover:bg-gray-400 ">
+                <a  href="/search/@tag.Name/0">
+                    @tag.Name
+                    <sub class="italic">@tag.Count</sub>
+                </a>
+            </div>
+            @("\t")
+        }
+    </div>
+</div>
+}
+@code {
+    [Parameter] public string Title { get; set; }
+    [Parameter] public IEnumerable<Tag> Tags {get;set;}
+}

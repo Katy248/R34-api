@@ -3,33 +3,34 @@
 
 @if (_post is null)
 {
-    <article >
+    <div>
         @if (_loading)
         {
-            <h3 aria-busy="true">Loading</h3>
+            <div class="text-3xl">Loading</div>
         }
         else
         {
-            <h3>Post does not exist</h3>
+            <div class="text-3xl">Post does not exist</div>
         }
        
-    </article>
+    </div>
 }
 else
 {
-    <article>
-        <img src="@_post.FileUrl"/>
-        <hgroup>
-            <h3>
-                Creator @_post.CreatorId <sup></sup>
-            </h3>
+    <div class="grid sm:grid-cols-2 gap-2">
+        <div class="flex-grow-0">
+            <img class="rounded" src="@_post.FileUrl"/>
+        </div>
+        <div>
+            <div class="text-3xl">Creator Id @_post.CreatorId</div>
+            <div class="text-2xl">Created at: @_post.CreatedAt</div>
+            <div class="">
+                <TagsComponent Post="@_post"/>
+            </div>
             
-            <h3>Created at: @_post.CreatedAt</h3>
-        </hgroup>
-        <details>
-            <summary>
-                <strong>Details</strong>
-            </summary>
+        </div>
+        <div>
+            <div class="text-3xl">Details</div>
 
             <p>Rating: @_post.Rating</p>
             <p>Score: @_post.Score</p>
@@ -43,50 +44,24 @@ else
             <p>Has comments: @_post.HasComments</p>
             <p>Hash: @_post.Hash</p>
             <p>Status: @_post.Status</p>
-
-        </details>
-
-        <div class="grid">
-            <div>
-                <TagsComponent Post="@_post"/>
-            </div>
-            <div>
-                
-                @if (_comments.Count() == 0)
-                {
-                    <h3>
-                        No comments
-                    </h3>
-                }
-                else
-                {
-                    <h3>
-                        Comments
-                    </h3>
-                    @foreach (var comment in _comments)
-                    {
-                        @* <article> *@
-                            @* <header>@comment.CreatorId</header> *@
-                            <blockquote>
-                                @comment.Body
-                                <footer>
-                                    <cite>
-                                        - @comment.Creator (@comment.CreatedAt)
-                                        <a href="/search/user:@comment.CreatorId/0">
-                                            @comment.CreatorId
-                                        </a>
-                                    </cite>
-                                </footer>
-                                
-                            </blockquote>
-                        @* </article> *@
-                    }
-                }
-
-            </div>
         </div>
+        <div>
+            @if (_comments.Count() == 0)
+            {
+                <div class="text-3xl">
+                    No comments
+                </div>
+            }
+            else
+            {
+                <CommentsPresenter Comments="@_comments"/>
+            }
+
+        </div>
+    </div>
+    
+    
         
-    </article>
 }
 
 

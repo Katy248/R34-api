@@ -1,53 +1,30 @@
 ﻿@using R34.Models;
-<h3>Tags:</h3>
+<div class="text-xl">Tags:</div>
 @if (_tags.Count == 0)
 {
-    <article aria-busy="true">
+    <div aria-busy="true">
         Loading
-    </article>
+    </div>
 }
 else
 {
-    <article>
-        <h6>Copyright</h6>
-        @foreach (var tag in _tags.Where(tag => tag.Type == (int)TagType.Copyright))
-        {
-            <a href="/search/@tag.Name/0">@tag.Name<sub>@tag.Count</sub></a>
-            @("\t")
-        }
-    </article>
-    <article>
-        <h6>Character</h6>
-        @foreach (var tag in _tags.Where(tag => tag.Type == (int)TagType.Character))
-        {
-            <a href="/search/@tag.Name/0">@tag.Name<sub>@tag.Count</sub></a>
-            @("\t")
-        }
-    </article>
-    <article>
-        <h6>General</h6>
-        @foreach (var tag in _tags.Where(tag => tag.Type == (int)TagType.General))
-        {
-            <a href="/search/@tag.Name/0">@tag.Name<sub>@tag.Count</sub></a>
-            @("\t")
-        }
-    </article>
-    <article>
-        <h6>Artist</h6>
-        @foreach (var tag in _tags.Where(tag => tag.Type == (int)TagType.Artist))
-        {
-            <a href="/search/@tag.Name/0">@tag.Name<sub>@tag.Count</sub></a>
-            @("\t")
-        }
-    </article>
-    <article>
-        <h6>Meta</h6>
-        @foreach (var tag in _tags.Where(tag => tag.Type == (int)TagType.Meta))
-        {
-            <a href="/search/@tag.Name/0">@tag.Name<sub>@tag.Count</sub></a>
-            @("\t")
-        }
-    </article>
+    <div class="flex flex-col gap-4 pt-4">
+        <TagsPresenter 
+            Title="Copyright"
+            Tags="@(_tags.Where(tag => tag.Type == (int)TagType.Copyright))"/>
+        <TagsPresenter 
+            Title="Caharacters"
+            Tags="@(_tags.Where(tag => tag.Type == (int)TagType.Character))"/>
+        <TagsPresenter 
+            Title="General"
+            Tags="@(_tags.Where(tag => tag.Type == (int)TagType.General))"/>
+        <TagsPresenter 
+            Title="Artist"
+            Tags="@(_tags.Where(tag => tag.Type == (int)TagType.Artist))"/>
+        <TagsPresenter 
+            Title="Meta"
+            Tags="@(_tags.Where(tag => tag.Type == (int)TagType.Meta))"/>
+    </div>
     @* <article>
         @foreach (var tag in _tags.Where(tag => tag.Type == 2))
         {

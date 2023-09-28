@@ -1,9 +1,9 @@
 ﻿@using R34.WebClient.StateProviders;
 
-<form class="grid" @onsubmit="PerformSearch">
+<form class="flex flex-row justify-stretch p-2 gap-2" @onsubmit="PerformSearch">
     @* <input @bind-value="Query" placeholder="Enter tags"></input> *@
-    <input @bind-value="SearchQueryInfo.SearchQuery" placeholder="Enter tags"></input>
-    <button type="submit">Search</button>
+    <input class="bg-gray-200 rounded px-4 flex-grow border-none" @bind-value="SearchQueryInfo.SearchQuery" placeholder="Enter tags"></input>
+    <button class="bg-pink-300 px-6 rounded" type="submit">Search</button>
 </form>
 @code {
     protected override async Task OnInitializedAsync()
